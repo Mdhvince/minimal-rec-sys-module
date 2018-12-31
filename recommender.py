@@ -1,9 +1,7 @@
 
 
 # create function with this in recommender.py
-#movie_content = np.array(movies.iloc[:,4:])
-#movie_content_transpose = np.transpose(movie_content)
-#dot_prod = movie_content.dot(movie_content_transpose)
+
 
 # arguments for make_recommendations() to feed find_similar_items():
 # df_items(movies), item_id_colname, dot_prod, item_name_colname
@@ -128,7 +126,10 @@ class Recommender():
 		self.item_mat = item_mat
 
 		# Create ranked items
-		self.ranked_items = rf.ranked_df(self.df_reviews)
+		self.ranked_items = rf.ranked_df(self.df_reviews,
+										 self.item_id_colname,
+										 self.rating_col_name,
+										 self.date_col_name)
 
 
 	def predict_rating(self, user_id, item_id):
@@ -143,19 +144,62 @@ class Recommender():
 
 			# Take dot product of that row and column in U and V 
 			# to make prediction
-			pred = np.dot(self.user_mat[user_row, :], self.item_mat[:, item_col])
+			pred = (
+				np.dot(self.user_mat[user_row, :], self.item_mat[:, item_col])
+			)
 
 			return pred
+
 		except:
 			print('Sorry but the prediction cannot be made because either')
 			print('the movie or the user is not present in our database')
+
 			return None
 
 
+
+	def prep_get_similar_items():
+		item_content = np.array(self.df_items.iloc[:,4:])
+		item_content_transpose = np.transpose(item_content)
+		self.dot_prod = item_content.dot(item_content_transpose)
+
 	def make_recommendations(self, _id, _id_type='movie', rec_num=5):
 
-		pass
+		if _id_type == 'user':
+			if _id in self.user_ids_series:
+				message = 'Glad to see you again! recommended for you:\n'
+				idx = np.where(self.user_ids_series == _id)[0][0]
 
+				# predict movies
+				# take the dot product of that row and the V matrix
+				preds = np.dot(self.user_mat[idx,:],self.item_mat)
+
+				# pull the top movies according to the prediction
+				indices = preds.argsort()[-rec_num:][::-1]
+				rec_ids = self.items_ids_series[indices]	
+				rec_names = rf.get_movie_names(rec_ids,
+											   self.df_items,
+											   self.item_id_colname)
+
+			else:
+				message = "Hey, you are new here, this is for you:\n"
+				# if we don't have this user, give just top ratings back
+				rec_names = (
+					popular_recommendations(_id, self.ranked_items, rec_num)
+				)
+		else:
+			if _id in self.items_ids_series:
+				message = 'Similar movies for this rated movie:\n'
+				rec_names = (
+					list(rf.find_similar_movies(_id, 
+											self.df_items,
+											self.dot_prod,
+											self.item_name_colname))[:rec_num]
+				)
+			else:
+				print("Please update the database with this movie")
+
+		return rec_ids, rec_names, message
 
 
 

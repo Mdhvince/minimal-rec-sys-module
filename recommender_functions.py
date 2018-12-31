@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-def find_similar_items(item_id):
+def find_similar_items(item_id, df_items, dot_prod, item_name_colname):
 	'''
 	INPUT:
 	- item_id: an item id * (int)
@@ -24,7 +24,7 @@ def find_similar_items(item_id):
 	return similar_items
 
 
-def get_item_names(item_ids):
+def get_item_names(item_ids, df_items, item_id_colname):
 	'''
 	INPUT:
 	- item_ids: a list of item ids
@@ -39,7 +39,7 @@ def get_item_names(item_ids):
 	return item_lst
 
 
-def ranked_df(df_reviews):
+def ranked_df(df_reviews, item_id_colname, rating_col_name, date_col_name):
 	"""
 	Input:
 	- reviews dataframe
@@ -79,7 +79,7 @@ def ranked_df(df_reviews):
 	return ranked_items
 
 
-def popular_recommendations(user_id, top_k=5):
+def popular_recommendations(user_id, ranked_items, top_k):
 	'''
 	INPUT:
 	- user_id: the user_id (str) of the individual you are making 
