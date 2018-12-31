@@ -22,3 +22,21 @@ def find_similar_items(item_id):
 	similar_items = np.array(df_items.iloc[similar_id, ][item_name_colname])
     
 	return similar_items
+
+
+def get_item_names(item_ids):
+    '''
+	INPUT:
+	- item_ids: a list of item ids
+
+	OUTPUT:
+	-A list of items names that refere to the item ids given
+	'''
+
+	item_lst = list(df_items[df_items[item_id_colname]
+					.isin(item_lst)][item_name_colname])
+   
+    return item_lst
+
+# arguments for make_recommendations() to feed get_item_names():
+# df_items(movies), item_id_colname, item_name_colname
