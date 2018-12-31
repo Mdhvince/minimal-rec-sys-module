@@ -82,8 +82,6 @@ class Recommender():
 		self.n_users = self.user_item_mat.shape[0]
 		self.n_items = self.user_item_mat.shape[1]
 		self.num_ratings = np.count_nonzero(~np.isnan(self.user_item_mat))
-		self.user_ids_series = np.array(self.user_item_df.index)
-		self.items_ids_series = np.array(self.user_item_df.columns)
 
 		#### FunkSVD ####
 
@@ -131,6 +129,34 @@ class Recommender():
 
 		# Create ranked items
 		self.ranked_items = rf.ranked_df(self.df_reviews)
+
+
+	def predict_rating(self, user_id, item_id):
+
+		try:
+			self.user_ids_series = np.array(self.user_item_df.index)
+			self.items_ids_series = np.array(self.user_item_df.columns)
+
+			# User row and Movie Column
+			user_row = np.where(self.user_ids_series == user_id)[0][0]
+			item_col = np.where(self.items_ids_series == movie_id)[0][0]
+
+			# Take dot product of that row and column in U and V 
+			# to make prediction
+			pred = np.dot(self.user_mat[user_row, :], self.item_mat[:, item_col])
+
+			return pred
+		except:
+			print('Sorry but the prediction cannot be made because either')
+			print('the movie or the user is not present in our database')
+			return None
+
+
+	def make_recommendations(self, _id, _id_type='movie', rec_num=5):
+
+		pass
+
+
 
 
 
