@@ -21,8 +21,16 @@ import pandas as pd
 import recommender_functions as rf
 
 class Recommender():
+	'''
+    This Recommender uses FunkSVD to make predictions of exact 
+    ratings. And uses either FunkSVD or a
+    Knowledge Based recommendation (highest ranked) to make
+    recommendations for users.  Finally, if given a movie,
+    the recommender will provide movies that are most similar as
+    a Content Based Recommender.
+    '''
 
-	def __init__(self, df_items, df_reviews,
+	def __init__(self, df_items, df_reviews, item_name_colname='item',
 				 user_id_colname='user_id', item_id_colname='item_id',
 				 rating_col_name='rating', date_col_name='date'):
 		"""
@@ -32,6 +40,7 @@ class Recommender():
 		"""
 		self.df_items = df_items
 		self.df_reviews = df_reviews
+		self.item_name_colname = item_name_colname
 		self.user_id_colname = user_id_colname
 		self.item_id_colname = item_id_colname
 		self.rating_col_name = rating_col_name
@@ -59,6 +68,8 @@ class Recommender():
 		self.learning_rate = learning_rate
 		self.iters = iters
 
+		print('Create User-Item matrix...')
+
 		# Create user-item matrix
 		user_item = self.df_reviews[[self.user_id_colname,
 									 self.item_id_colname,
@@ -67,7 +78,7 @@ class Recommender():
 									 ]]
 
 		self.user_item_df = (
-			self.user_item.groupby(
+				user_item.groupby(
 					[self.user_id_colname, self.item_id_colname]
 					)[self.rating_col_name].sum()
 					.unstack()
@@ -80,7 +91,10 @@ class Recommender():
 		self.n_users = self.user_item_mat.shape[0]
 		self.n_items = self.user_item_mat.shape[1]
 		self.num_ratings = np.count_nonzero(~np.isnan(self.user_item_mat))
+		self.user_ids_series = np.array(self.user_item_df.index)
+		self.items_ids_series = np.array(self.user_item_df.columns)
 
+		print('Train data with Funk Sigular Value Decomposition...')
 		#### FunkSVD ####
 
 		# initialize the user and item matrices with random values
@@ -135,9 +149,6 @@ class Recommender():
 	def predict_rating(self, user_id, item_id):
 
 		try:
-			self.user_ids_series = np.array(self.user_item_df.index)
-			self.items_ids_series = np.array(self.user_item_df.columns)
-
 			# User row and Movie Column
 			user_row = np.where(self.user_ids_series == user_id)[0][0]
 			item_col = np.where(self.items_ids_series == movie_id)[0][0]
@@ -152,18 +163,13 @@ class Recommender():
 
 		except:
 			print('Sorry but the prediction cannot be made because either')
-			print('the movie or the user is not present in our database')
+			print('the item or the user is not present in our database')
 
 			return None
 
 
-
-	def prep_get_similar_items():
-		item_content = np.array(self.df_items.iloc[:,4:])
-		item_content_transpose = np.transpose(item_content)
-		self.dot_prod = item_content.dot(item_content_transpose)
-
-	def make_recommendations(self, _id, _id_type='movie', rec_num=5):
+	def make_recommendations(self, _id, dot_prod,
+							 _id_type='movie', rec_num=5):
 
 		if _id_type == 'user':
 			if _id in self.user_ids_series:
@@ -177,9 +183,10 @@ class Recommender():
 				# pull the top movies according to the prediction
 				indices = preds.argsort()[-rec_num:][::-1]
 				rec_ids = self.items_ids_series[indices]	
-				rec_names = rf.get_movie_names(rec_ids,
-											   self.df_items,
-											   self.item_id_colname)
+				rec_names = rf.get_item_names(rec_ids,
+											  self.df_items,
+											  self.item_id_colname,
+											  self.item_name_colname)
 
 			else:
 				message = "Hey, you are new here, this is for you:\n"
@@ -191,20 +198,15 @@ class Recommender():
 			if _id in self.items_ids_series:
 				message = 'Similar movies for this rated movie:\n'
 				rec_names = (
-					list(rf.find_similar_movies(_id, 
-											self.df_items,
-											self.dot_prod,
-											self.item_name_colname))[:rec_num]
+					list(rf.find_similar_items(_id, 
+											   self.df_items,
+											   self.item_name_colname,
+											   dot_prod))[:rec_num]
 				)
 			else:
 				print("Please update the database with this movie")
 
 		return rec_ids, rec_names, message
-
-
-
-
-
 
 
 

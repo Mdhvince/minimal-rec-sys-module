@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-def find_similar_items(item_id, df_items, dot_prod, item_name_colname):
+def find_similar_items(item_id, df_items, item_name_colname, dot_prod):
 	'''
 	INPUT:
 	- item_id: an item id * (int)
@@ -24,7 +24,7 @@ def find_similar_items(item_id, df_items, dot_prod, item_name_colname):
 	return similar_items
 
 
-def get_item_names(item_ids, df_items, item_id_colname):
+def get_item_names(item_ids, df_items, item_id_colname, item_name_colname):
 	'''
 	INPUT:
 	- item_ids: a list of item ids
