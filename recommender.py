@@ -7,3 +7,6 @@
 
 # arguments for make_recommendations() to feed find_similar_items():
 # df_items(movies), item_id_colname, dot_prod, item_name_colname
+
+# arguments for make_recommendations() to feed get_item_names():
+# df_items(movies), item_id_colname, item_name_colname

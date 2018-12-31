@@ -25,18 +25,15 @@ def find_similar_items(item_id):
 
 
 def get_item_names(item_ids):
-    '''
+	'''
 	INPUT:
 	- item_ids: a list of item ids
 
 	OUTPUT:
 	-A list of items names that refere to the item ids given
 	'''
-
-	item_lst = list(df_items[df_items[item_id_colname]
-					.isin(item_lst)][item_name_colname])
+	
+	match_item_ids = df_items[item_id_colname].isin(item_ids)
+	item_lst = list(df_items[match_item_ids][item_name_colname])
    
-    return item_lst
-
-# arguments for make_recommendations() to feed get_item_names():
-# df_items(movies), item_id_colname, item_name_colname
+	return item_lst
