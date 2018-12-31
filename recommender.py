@@ -10,3 +10,6 @@
 
 # arguments for make_recommendations() to feed get_item_names():
 # df_items(movies), item_id_colname, item_name_colname
+
+# arguments for make_recommendations() to feed ranked_df():
+# df_reviews(reviews), item_id_colname, rating_col_name, date_col_name

@@ -32,8 +32,61 @@ def get_item_names(item_ids):
 	OUTPUT:
 	-A list of items names that refere to the item ids given
 	'''
-	
+
 	match_item_ids = df_items[item_id_colname].isin(item_ids)
 	item_lst = list(df_items[match_item_ids][item_name_colname])
    
 	return item_lst
+
+
+def ranked_df(df_reviews):
+	"""
+	Input:
+	- reviews dataframe
+    
+	Output:
+	- ranked df of items based on popularity
+	"""
+    
+	grouped_items = df_reviews.groupby(item_id_colname)
+    
+	# Get the ratings avg
+	mean_ratings = grouped_items[rating_col_name].mean()
+
+	# Get count of rating
+	count_ratings = grouped_items[rating_col_name].count()
+    
+	# Get the date
+	last_rating = grouped_items[date_col_name].max()
+    
+	# Create Dataframes
+	mean_ratings = pd.DataFrame(mean_ratings)
+	count_ratings = pd.DataFrame(count_ratings)
+	last_rating = pd.DataFrame(last_rating)
+    
+	# Put all together
+	mean_ratings['count_ratings'] = count_ratings
+	mean_ratings['date'] = last_rating
+
+	# sort by rating, if tie sort by count then date
+	# include only items rated at least 5 times
+	ranked_items = mean_ratings.sort_values([rating_col_name,
+	 										 'count_ratings',
+	 										 'date'], ascending=False)
+	ranked_items = ranked_items[ranked_items['count_ratings'] > 4]
+	ranked_items = ranked_items.reset_index()
+    
+	return ranked_items
+
+
+
+
+
+
+
+
+
+
+
+
+
