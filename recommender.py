@@ -17,3 +17,16 @@
 # arguments for make_recommendations() to feed popular_recommendations():
 # ranked_items(will be the name of the variable that store the ranked_df() in make rec,
 # item_id_colname
+
+import numpy as np
+import pandas as pd
+import recommender_functions as rf
+
+class Recommender():
+
+	def __init__(self, df_items, df_reviews):
+		self.df_items = df_items
+		self.df_reviews = df_reviews
+
+
+	
