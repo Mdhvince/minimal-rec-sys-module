@@ -13,3 +13,7 @@
 
 # arguments for make_recommendations() to feed ranked_df():
 # df_reviews, item_id_colname, rating_col_name, date_col_name
+
+# arguments for make_recommendations() to feed popular_recommendations():
+# ranked_items(will be the name of the variable that store the ranked_df() in make rec,
+# item_id_colname

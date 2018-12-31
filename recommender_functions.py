@@ -79,9 +79,21 @@ def ranked_df(df_reviews):
 	return ranked_items
 
 
+def popular_recommendations(user_id, top_k=5):
+	'''
+	INPUT:
+	- user_id: the user_id (str) of the individual you are making 
+	recommendations for
+	- top_k: an integer of the number recommendations you want back
 
+	OUTPUT:
+	top_items - a list of the top_k recommended items by item title in
+	order best to worst
+	'''
 
+	top_items = list(ranked_items[item_id_colname])[:top_k]
 
+	return top_items
 
 
 
