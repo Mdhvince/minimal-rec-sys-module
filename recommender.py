@@ -195,11 +195,13 @@ class Recommender():
 											  self.item_id_colname,
 											  self.item_name_colname) 
 			else:
-				print("Please update the database with this item")
+				
+				message = (
+					"We can't make recommendation for this item, please make" 
+					"sure the data was updated with this item."
+				)
 
-				return None
+				return message, None, None
 
 		return rec_ids, rec_names, message
-
-
 
