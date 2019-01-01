@@ -182,7 +182,17 @@ class Recommender():
 											  self.item_name_colname)
 		else:
 			if _id in self.items_ids_series:
-				message = 'Similar items for this rated item:\n'
+
+				name_item_for_message = rf.get_item_names([_id],
+											  self.df_items,
+											  self.item_id_colname,
+											  self.item_name_colname)
+
+				message = (
+					f"Similar items for id:{_id}, corresponding to "
+					f"{name_item_for_message[0]}:\n"
+					)
+
 				rec_ids = (
 					list(rf.find_similar_items(_id, 
 											   self.df_items,
@@ -198,10 +208,10 @@ class Recommender():
 				
 				message = (
 					"We can't make recommendation for this item, please make" 
-					"sure the data was updated with this item."
+					"sure the data was updated with this item.\n"
 				)
 
-				return message, None, None
+				return None, None, message
 
 		return rec_ids, rec_names, message
 
