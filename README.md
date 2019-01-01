@@ -69,7 +69,7 @@ Feel free to clone the repo and do your own recommendations, If you find somethi
 Please report any bugs.
 
 ## Authors
-Mdhvince
+Medhy Vinceslas
 
 ## License
 Project under the <a href='https://choosealicense.com/licenses/cc0-1.0/'>CC0-1.0</a> License
