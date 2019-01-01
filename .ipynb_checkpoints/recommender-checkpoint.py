@@ -112,7 +112,7 @@ class Recommender():
 								self.learning_rate * (2*diff*user_mat[i, k])
 							)
 
-			print(f"\t{iteration+1} \t\t {sse_accum/self.num_ratings} ")
+			print(f"{iteration+1} \t\t {sse_accum/self.num_ratings} ")
 
 		# Keep these matrices for later
 		self.user_mat = user_mat
@@ -171,33 +171,20 @@ class Recommender():
 
 				message = "Hey, you are new here, this is for you:\n"
 				# if we don't have this user, give just top ratings back
-				rec_ids = rf.popular_recommendations(_id,
-													 self.ranked_items,
-													 self.item_id_colname,
-													 rec_num)
-
-				rec_names = rf.get_item_names(rec_ids,
-											  self.df_items,
-											  self.item_id_colname,
-											  self.item_name_colname)
+				rec_names =rf.popular_recommendations(_id,
+													  self.ranked_items,
+													  rec_num)
 		else:
 			if _id in self.items_ids_series:
 				message = 'Similar items for this rated item:\n'
-				rec_ids = (
+				rec_names = (
 					list(rf.find_similar_items(_id, 
 											   self.df_items,
-											   self.item_id_colname,
+											   self.item_name_colname,
 											   dot_prod))[:rec_num]
 				)
-
-				rec_names = rf.get_item_names(rec_ids,
-											  self.df_items,
-											  self.item_id_colname,
-											  self.item_name_colname) 
 			else:
 				print("Please update the database with this item")
-
-				return None
 
 		return rec_ids, rec_names, message
 
