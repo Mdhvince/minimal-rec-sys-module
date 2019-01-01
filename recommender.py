@@ -19,6 +19,16 @@ class Recommender():
 		Input:
 		- df_items: Pandas datafram of items
 		- df_reviews: Pandas datafram of items
+		- item_name_colname: The column name corresponding to the item
+		name (str)
+		- user_id_colname: The column name corresponding to the user id
+		(str)
+		- item_id_colname: The column name corresponding to the item
+		id (str)
+		- rating_col_name: The column name corresponding to the rating
+		str)
+		- date_col_name: The column name corresponding to the datetime
+		(str)
 		"""
 		self.df_items = df_items
 		self.df_reviews = df_reviews
