@@ -150,6 +150,18 @@ class Recommender():
 
 
 	def predict_rating(self, user_id, item_id):
+		"""
+		This function is optional, you can use it if you want to
+		predict the rate that a particular user will give to a
+		particular item based on Sigular Value decomposion.
+
+		Input:
+		- user_id: a user ID (int)
+		- item_id: an item ID (int)
+
+		Output:
+		- The predicted rate (float)
+		"""
 
 		try:
 			# User row and Item Column
@@ -172,7 +184,35 @@ class Recommender():
 
 
 	def make_recommendations(self, _id, dot_prod,
-							 _id_type='movie', rec_num=5):
+							 _id_type='item', rec_num=5):
+		"""
+		This function make recommendations for a particular user or a
+		particular item regarding the value that you've putted in
+		the _id_type argument.
+    
+		If you choose _id_type='user':
+		the _id argument will be considered as a user id and the
+		recommendation is given using matrix factorization if the user
+		has already rated some movies before. If the user is a new user
+		the recommendation is given using the most popular movies in
+		the data (Ranked based recommendation).
+    
+		If you choose _id_type='item':
+		the _id argument will be considered as a item id and the
+		recommendation is given using similarity between movies if the
+		item exist in the data (Content Based Recommendation).
+		If the item is not present in the data (so no information
+		about the genre, years, ect.) it will return a message to
+		update the data with this item.
+
+		Input:
+		- _id: either a user or item id (int)
+		- dot_prod: the dot product matrix computed by your own
+		to find similar items
+		- _id_type: either 'user' or 'item', Default:'item' (str)
+		- rec_num: number of recommendation that you want
+		Default:5 (int)
+		"""
 
 		if _id_type == 'user':
 			if _id in self.user_ids_series:
