@@ -55,6 +55,20 @@ class Recommender():
 
 
 	def fit(self, latent_features=12, learning_rate=0.0001, iters=100):
+		"""
+		This function will train the data using a Funk Singular value
+		decomposition, by creating a user matrix U (user by latent
+		feature), an item matrix (latent feature by item) and a Sigma
+		diagonal matrix with the shape 
+		(latent feature x latent feature) with the highest 
+		(more relevant) latent feature on the upper left and the lowest
+		(less relevant) latent feature on the lower right.
+
+		Input:
+		- latent_features: number of latent feature (int), Default:12
+		- learning_rate: the lerning rate (int/float), Default:0.0001
+		- iters: number of iterations, Default:100
+		"""
 
 		self.latent_features = latent_features
 		self.learning_rate = learning_rate
