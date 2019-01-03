@@ -3,13 +3,6 @@ import pandas as pd
 
 
 def find_similar_items(item_id, df_items, item_id_colname, dot_prod):
-	'''
-	INPUT:
-	- item_id: an item id * (int)
-
-	OUTPUT:
-	- An array of the most similar items by ids
-	'''
 
 	# find all item indices 
 	item_idx = np.where(df_items[item_id_colname] == item_id)[0][0]
@@ -25,13 +18,6 @@ def find_similar_items(item_id, df_items, item_id_colname, dot_prod):
 
 
 def get_item_names(item_ids, df_items, item_id_colname, item_name_colname):
-	'''
-	INPUT:
-	- item_ids: a list of item ids
-
-	OUTPUT:
-	-A list of items names that refere to the item ids given
-	'''
 
 	match_item_ids = df_items[item_id_colname].isin(item_ids)
 	item_lst = list(df_items[match_item_ids][item_name_colname])
@@ -40,13 +26,6 @@ def get_item_names(item_ids, df_items, item_id_colname, item_name_colname):
 
 
 def ranked_df(df_reviews, item_id_colname, rating_col_name, date_col_name):
-	"""
-	Input:
-	- reviews dataframe
-    
-	Output:
-	- ranked df of items based on popularity
-	"""
     
 	grouped_items = df_reviews.groupby(item_id_colname)
     
@@ -80,16 +59,6 @@ def ranked_df(df_reviews, item_id_colname, rating_col_name, date_col_name):
 
 
 def popular_recommendations(user_id, ranked_items, item_id_colname, top_k):
-	'''
-	INPUT:
-	- user_id: the user_id (str) of the individual you are making 
-	recommendations for
-	- top_k: an integer of the number recommendations you want back
-
-	OUTPUT:
-	top_items - a list of the top_k recommended items by item ids in
-	order best to worst
-	'''
 
 	top_items = list(ranked_items[item_id_colname])[:top_k]
 
