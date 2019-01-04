@@ -184,7 +184,7 @@ class Recommender():
 
 
 	def make_recommendations(self, _id, dot_prod,
-							 _id_type='item', rec_num=5):
+							 _id_type='item', rec_num=5, window=0):
 		"""
 		This function make recommendations for a particular user or a
 		particular item regarding the value that you've putted in
@@ -261,7 +261,7 @@ class Recommender():
 					list(rf.find_similar_items(_id, 
 											   self.df_items,
 											   self.item_id_colname,
-											   dot_prod))[:rec_num]
+											   dot_prod, window))[:rec_num]
 				)
 
 				rec_names = rf.get_item_names(rec_ids,
