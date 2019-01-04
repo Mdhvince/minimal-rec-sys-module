@@ -212,6 +212,16 @@ class Recommender():
 		- _id_type: either 'user' or 'item', Default:'item' (str)
 		- rec_num: number of recommendation that you want
 		Default:5 (int)
+		- window: When computing similarity with dot product of
+		matrices, a window of 0 means we want the most similar.
+		Sometimes, you can get only 1 similar, if you want more,
+		you can raise the window (we recommend no increase >3)
+		Default:0 (int)
+
+		Output:
+		- recommendation ids
+		- recommendation names
+		- and a personalized message
 		"""
 
 		if _id_type == 'user':
