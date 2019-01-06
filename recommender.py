@@ -183,7 +183,7 @@ class Recommender():
 			return None
 
 
-	def make_recommendations(self, _id, dot_prod,
+	def make_recommendations(self, _id, dot_prod, dot_prod_user,
 							 _id_type='item', rec_num=5, window=0):
 		"""
 		This function make recommendations for a particular user or a
@@ -209,6 +209,8 @@ class Recommender():
 		- _id: either a user or item id (int)
 		- dot_prod: the dot product matrix computed by your own
 		to find similar items
+		- dot_prod_user: the dot product matrix computed by your own
+		to find similar users
 		- _id_type: either 'user' or 'item', Default:'item' (str)
 		- rec_num: number of recommendation that you want
 		Default:5 (int)

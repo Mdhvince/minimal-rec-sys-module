@@ -4,7 +4,7 @@ import pandas as pd
 
 def find_similar_items(item_id, df_items, item_id_colname, dot_prod, window):
 
-	# find all item indices 
+	# find item indice 
 	item_idx = np.where(df_items[item_id_colname] == item_id)[0][0]
     
 	# find the most similar item indices
