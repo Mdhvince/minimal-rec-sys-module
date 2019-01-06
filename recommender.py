@@ -243,6 +243,11 @@ class Recommender():
 											  self.item_id_colname,
 											  self.item_name_colname)
 
+				rec_user_user_ids = rf.find_similar_user(_id,
+													  	 self.df_reviews,
+													  	 self.user_id_colname,
+													  	 dot_prod_user)
+
 			else:
 
 				message = "Hey, you are new here, this is for you:\n"
