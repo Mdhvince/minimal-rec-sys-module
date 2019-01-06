@@ -248,6 +248,12 @@ class Recommender():
 													  	 self.user_id_colname,
 													  	 dot_prod_user)
 
+				rec_user_item_names = rf.user_user_cf(rec_user_user_ids,
+													  self.user_item_df,
+													  self.df_reviews,
+													  self.item_id_colname,
+													  self.item_name_colname)
+
 			else:
 
 				message = "Hey, you are new here, this is for you:\n"
@@ -261,6 +267,10 @@ class Recommender():
 											  self.df_items,
 											  self.item_id_colname,
 											  self.item_name_colname)
+
+				rec_user_user_ids = None 
+				rec_user_item_names = None
+				
 		else:
 			if _id in self.items_ids_series:
 
@@ -284,15 +294,22 @@ class Recommender():
 				rec_names = rf.get_item_names(rec_ids,
 											  self.df_items,
 											  self.item_id_colname,
-											  self.item_name_colname) 
+											  self.item_name_colname)
+
+				rec_user_user_ids = None 
+				rec_user_item_names = None
+
 			else:
 				
 				message = (
 					"We can't make recommendation for this item, please make" 
 					"sure the data was updated with this item.\n"
 				)
+				rec_ids = None
+				rec_names = None
+				rec_user_user_ids = None 
+				rec_user_item_names = None
 
-				return None, None, message
 
-		return rec_ids, rec_names, message
+		return rec_ids, rec_names, message, rec_user_user_ids, rec_user_item_names
 
