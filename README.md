@@ -11,7 +11,8 @@ the recommender will provide items that are most similar as a Content Based Reco
 - reviews_clean.csv: cleanned reviews data to test my module
 - recommender.py: class Recommender to use
 - recommender_functions.py: functions used by the Recommender class (not used by user)
-- recsys_main.ipynb: example of how to use the module
+
+Full example provided my repo: <a href='https://github.com/Mdhvince/Recommendation_IBM_article/blob/master/rec_eng_ibm.ipynb'>recommender engine for article on IBM Watson Studio platform</a>
 
 ## Quick start
 
@@ -44,8 +45,10 @@ rec.fit(iters=1)
 
 #### Dot product matrix
 Then you need to create a dot product using a subset of your item dataframe, this subset contains only additionnal
-feature like genre, years etc. but not informations about movie id, movie name, etc. The dot product is used to find
-similar items.
+feature like genre, years etc. but not informations about movie id, movie name, etc.
+
+To make recommendation: given an item id we want to find similar items to this item. Similarity are found by computing the dot product of items with its transpose, the more the result of an item-item pair is high, the more they have in common.
+This dot_product_matrix will be use in the `make_recommendations()` function.
 ```
 def prep_get_similar_items():
     item_content = np.array(movies_test.iloc[:,4:])
@@ -55,15 +58,69 @@ def prep_get_similar_items():
 
 dot_product_matrix = prep_get_similar_items()
 ```
+The same thing in order to find similar users:
+```
+df_user_similarity = rec.user_item_df.reset_index().replace(np.nan, 0)
+def prep_get_similar_user():
+    user_content = np.array(df_user_similarity.iloc[:,1:])
+    user_content_transpose = np.transpose(user_content)
+    dot_prod = user_content.dot(user_content_transpose)
+    return dot_prod
+
+dot_product_matrix_user = prep_get_similar_user()
+```
+
 
 #### Make recommendations
-Finally make recommendations using this dot product matrix. Recommendation can be made for existing user or movie using respectively FunkSVD or the dot product matrix (Content Based Recommendation). But also make recommendations for new user by displaying the most popular items (Ranked based recommendation).
+According to the `_id_type` or the `_i` (exist or not), this functions will made recommendations using:
+- Matrix Factorisation Funk SVD: if the _id_type='user' and the _id of the user exist in the database
+- Collaborative Filtering User-Based: if the _id_type='user' and the _id of the user exist in the database
+- Ranked Based: if the _id_type='user' and the _id of the user dosn't exist in the database (new user)
+- Collaborative Filtering Content-Based: if the _id_type='item' and the _id of the item exist in the database
+- error message: if the item doesn't exist
+
+To help you displaying result, you can use this helper function:
 ```
-rec_ids, rec_names, message = rec_loaded.make_recommendations(_id=10,
-                                                              dot_prod=dot_product_matrix,
-                                                              _id_type='user',
-                                                              rec_num=5)
+def display_recommendations(rec_ids, rec_names, message, rec_ids_users, rec_user_articles):
+    
+    if type(rec_ids) == type(None):
+        print(f"{message}")
+    
+    else:
+        dict_id_name = dict(zip(rec_ids, rec_names))
+        
+        if type(rec_ids_users) != type(None):
+            print('Matrix Factorisation SVD:')
+            print(f"\t{message}")
+            
+            for key, val  in dict_id_name.items():
+                print(f"\t- ID items: {key}")
+                print(f"\tName: {val}\n")
+
+            print('CF User Based:')
+            print('\tUser that are similar to you also seen:\n')
+            for i in rec_user_articles[:5]:
+                print(f"\t- {i}")
+        else:
+            print(f"\t{message}")
+            dict_id_name = dict(zip(rec_ids, rec_names))
+            for key, val  in dict_id_name.items():
+                print(f"\t- ID items: {key}")
+                print(f"\tName: {val}\n")
 ```
+The you can simply run
+```
+rec_ids, rec_names, message, rec_ids_users, rec_user_articles = rec.make_recommendations(_id=3,
+                                                                                         dot_prod=dot_product_matrix, #the matrix that you have created before
+                                                                                         dot_prod_user= dot_product_matrix_user, #the matrix that you have created before
+                                                                                         _id_type='user',
+                                                                                         rec_num=5)
+display_recommendations(rec_ids, rec_names, message, rec_ids_users, rec_user_articles)
+```
+
+Full example provided my repo: <a href='https://github.com/Mdhvince/Recommendation_IBM_article/blob/master/rec_eng_ibm.ipynb'>recommender engine for article on IBM Watson Studio platform</a>
+
+
 ## Interact with the project
 Feel free to clone the repo and do your own recommendations, If you find something interesting that I not mentionned, comment or feel free to contact me.
 Please report any bugs.
