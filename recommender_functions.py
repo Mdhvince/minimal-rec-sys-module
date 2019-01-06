@@ -1,6 +1,16 @@
 import numpy as np
 import pandas as pd
 
+def find_similar_user(user_id, df_reviews, user_id_colname, dot_prod_user):
+	user_idx = np.where(df_reviews[user_id_colname] == user_id)[0][0]
+
+	similar_id = np.where(dot_prod_user[user_idx] == np.max(dot_prod_user[user_idx]))[0]
+
+	similar_users = list(np.array(df_reviews.iloc[similar_id, ][user_id_colname]))
+	similar_users.remove(user_id)
+    
+	return similar_users
+
 
 def find_similar_items(item_id, df_items, item_id_colname, dot_prod, window):
 
