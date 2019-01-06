@@ -7,7 +7,9 @@ def find_similar_user(user_id, df_reviews, user_id_colname, dot_prod_user):
 	similar_id = np.where(dot_prod_user[user_idx] == np.max(dot_prod_user[user_idx]))[0]
 
 	similar_users = list(np.array(df_reviews.iloc[similar_id, ][user_id_colname]))
-	similar_users.remove(user_id)
+
+	if user_id in similar_users:
+		similar_users.remove(user_id)
     
 	return similar_users
 
@@ -40,7 +42,7 @@ def user_user_cf(rec_user_user_ids, user_item_df, df_reviews, item_id_colname, i
 
 	for user_id in rec_user_user_ids:
 		for i in user_item_df.columns:
-			if user_item_df.iloc[user_id][i] == 1.0:
+			if user_item_df.iloc[user_id][i] > 0:
 				article_ids.append(i)
 
 	article_names = list(set(df_reviews[df_reviews[item_id_colname].isin(article_ids)][item_name_colname]))
@@ -50,40 +52,32 @@ def user_user_cf(rec_user_user_ids, user_item_df, df_reviews, item_id_colname, i
 
 def ranked_df(df_reviews, item_id_colname, rating_col_name, date_col_name):
     
-	grouped_items = df_reviews.groupby(item_id_colname)
-    
-	# Get the ratings avg
-	mean_ratings = grouped_items[rating_col_name].mean()
 
 	# Get count of rating
-	count_ratings = grouped_items[rating_col_name].count()
-    
-	# Get the date
-	last_rating = grouped_items[date_col_name].max()
-    
-	# Create Dataframes
-	mean_ratings = pd.DataFrame(mean_ratings)
-	count_ratings = pd.DataFrame(count_ratings)
-	last_rating = pd.DataFrame(last_rating)
-    
-	# Put all together
-	mean_ratings['count_ratings'] = count_ratings
-	mean_ratings['date'] = last_rating
+	nb_ratings = dict(df_reviews.groupby(item_id_colname)[rating_col_name].count())
+	df_reviews['count_ratings'] = df_reviews[item_id_colname].map(nb_ratings)
 
-	# sort by rating, if tie sort by count then date
-	# include only items rated at least 5 times
-	ranked_items = mean_ratings.sort_values([rating_col_name,
-	 										 'count_ratings',
-	 										 'date'], ascending=False)
-	ranked_items = ranked_items[ranked_items['count_ratings'] > 4]
-	ranked_items = ranked_items.reset_index()
+    
+	# Get the ratings avg per items
+	mean_rate_article = dict(df_reviews.groupby(item_id_colname)[rating_col_name].mean())
+	df_reviews['mean_rate_article'] = df_reviews[item_id_colname].map(mean_rate_article)
+
+	# Compute weighted rate
+	v = df_reviews['count_ratings']
+	m = df_reviews['count_ratings'].quantile(0.90)
+	R = df_reviews['mean_rate_article']
+	C = df_reviews[rating_col_name].mean()
+
+	df_reviews['rank_score'] = (v/(v+m) * R) + (m/(m+v) * C)
+	
+	ranked_items = df_reviews.sort_values(by=['rank_score', date_col_name], ascending=False)
     
 	return ranked_items
 
 
 def popular_recommendations(user_id, ranked_items, item_id_colname, top_k):
 
-	top_items = list(ranked_items[item_id_colname])[:top_k]
+	top_items = list(ranked_items.drop_duplicates(subset=[item_id_colname])[item_id_colname])[:top_k]
 
 	return top_items
 
