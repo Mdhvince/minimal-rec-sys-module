@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
 
 def find_similar_user(user_id, df_reviews, user_id_colname, dot_prod_user):
 	user_idx = np.where(df_reviews[user_id_colname] == user_id)[0][0]
@@ -14,26 +16,37 @@ def find_similar_user(user_id, df_reviews, user_id_colname, dot_prod_user):
 	return similar_users
 
 
-def find_similar_items(item_id, df_items, item_id_colname, dot_prod, window):
+def find_similar_items(item_id, df_items, item_id_colname, based_similarity_col):
+    
+	tfidf = TfidfVectorizer(stop_words='english', ngram_range=(1, 2))
+	df_items[based_similarity_col] = df_items[based_similarity_col].fillna('')
+	tfidf_matrix = tfidf.fit_transform(df_items[based_similarity_col])
 
-	# find item indice 
-	item_idx = np.where(df_items[item_id_colname] == item_id)[0][0]
+	# Compute the cosine similarity matrix
+	cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+
+	# Get the pairwsie similarity scores of all items with that item
+	indice_item = df_items[df_items[item_id_colname] == item_id].index[0]
+	sim_scores = list(enumerate(cosine_sim[indice_item]))
+
+	# Sort from highest to lowest
+	sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+
+	item_indices = [i[0] for i in sim_scores]
+
+	similar_item_ids = list(df_items[item_id_colname].iloc[item_indices])
     
-	# find the most similar item indices
-	# to start I said they need to be the same for all content
-	similar_id = np.where( (dot_prod[item_idx] <= np.max(dot_prod[item_idx])) & (dot_prod[item_idx] >= np.max(dot_prod[item_idx])-window) )[0]
-    
-	# pull the items titles based on the indices
-	similar_items = np.array(df_items.iloc[similar_id, ][item_id_colname])
-    
-	return similar_items
+	return similar_item_ids
 
 
 def get_item_names(item_ids, df_items, item_id_colname, item_name_colname):
-
-	match_item_ids = df_items[item_id_colname].isin(item_ids)
-	item_lst = list(df_items[match_item_ids][item_name_colname])
-   
+    
+	# ordered names
+	item_lst = []
+	for i in item_ids:
+		name = tuple(df_items[df_items[item_id_colname] == i][item_name_colname])[0]
+		item_lst.append(name)
+    
 	return item_lst
 
 
