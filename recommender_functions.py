@@ -16,11 +16,7 @@ def find_similar_user(user_id, df_reviews, user_id_colname, dot_prod_user):
 	return similar_users
 
 
-def find_similar_items(item_id, df_items, item_id_colname, based_similarity_col):
-    
-	tfidf = TfidfVectorizer(stop_words='english', ngram_range=(1, 2))
-	df_items[based_similarity_col] = df_items[based_similarity_col].fillna('')
-	tfidf_matrix = tfidf.fit_transform(df_items[based_similarity_col])
+def find_similar_items(item_id, df_items, item_id_colname, tfidf_matrix):
 
 	# Compute the cosine similarity matrix
 	cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)

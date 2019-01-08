@@ -13,15 +13,13 @@ class Recommender():
     '''
 
 	def __init__(self, df_items, df_reviews,
-                 based_similarity_col, item_name_colname='item',
+                 item_name_colname='item',
 				 user_id_colname='user_id', item_id_colname='item_id',
 				 rating_col_name='rating', date_col_name='date'):
 		"""
 		Input:
 		- df_items: Pandas datafram of items
 		- df_reviews: Pandas datafram of items
-		- based_similarity_col: The column name that you want to be
-		based on to compute similarity between items
 		- item_name_colname: The column name corresponding to the item
 		name (str)
 		- user_id_colname: The column name corresponding to the user id
@@ -35,7 +33,6 @@ class Recommender():
 		"""
 		self.df_items = df_items
 		self.df_reviews = df_reviews
-		self.based_similarity_col = based_similarity_col
 		self.item_name_colname = item_name_colname
 		self.user_id_colname = user_id_colname
 		self.item_id_colname = item_id_colname
@@ -110,7 +107,7 @@ class Recommender():
 
 		sse_accum = 0
 
-		print("Iterations \t|\t Mean Squared Error ")
+		print("Iterations \t\t Mean Squared Error ")
 
 		for iteration in range(self.iters):
 			old_sse = sse_accum
@@ -140,7 +137,7 @@ class Recommender():
 								self.learning_rate * (2*diff*user_mat[i, k])
 							)
 
-			print(f"\t{iteration+1} \t|\t {sse_accum/self.num_ratings} ")
+			print(f"\t{iteration+1} \t\t {sse_accum/self.num_ratings} ")
 
 		# Keep these matrices for later
 		self.user_mat = user_mat
@@ -187,7 +184,7 @@ class Recommender():
 			return None
 
 
-	def make_recommendations(self, _id, dot_prod_user,
+	def make_recommendations(self, _id, dot_prod_user, tfidf_matrix,
 							 _id_type='item', rec_num=5):
 		"""
 		This function make recommendations for a particular user or a
@@ -285,7 +282,7 @@ class Recommender():
 					rf.find_similar_items(_id,
 										  self.df_items,
 										  self.item_id_colname,
-										  self.based_similarity_col))[:rec_num]
+                                          tfidf_matrix))[:rec_num]
 
 				rec_names = rf.get_item_names(rec_ids,
 											  self.df_items,
@@ -307,8 +304,5 @@ class Recommender():
 				rec_user_item_names = None
 
 
-		return (
-			rec_ids, rec_names, message,
-			rec_user_user_ids, rec_user_item_names
-			)
+		return rec_ids, rec_names, message, rec_user_user_ids, rec_user_item_names
 
