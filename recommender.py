@@ -307,5 +307,8 @@ class Recommender():
 				rec_user_item_names = None
 
 
-		return rec_ids, rec_names, message, rec_user_user_ids, rec_user_item_names
+		return (
+			rec_ids, rec_names, message,
+			rec_user_user_ids, rec_user_item_names
+			)
 
