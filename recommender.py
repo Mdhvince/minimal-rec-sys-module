@@ -20,6 +20,8 @@ class Recommender():
 		Input:
 		- df_items: Pandas datafram of items
 		- df_reviews: Pandas datafram of items
+		- based_similarity_col: The column name that you want to be
+		based on to compute similarity between items
 		- item_name_colname: The column name corresponding to the item
 		name (str)
 		- user_id_colname: The column name corresponding to the user id
@@ -108,7 +110,7 @@ class Recommender():
 
 		sse_accum = 0
 
-		print("Iterations \t\t Mean Squared Error ")
+		print("Iterations \t|\t Mean Squared Error ")
 
 		for iteration in range(self.iters):
 			old_sse = sse_accum
@@ -138,7 +140,7 @@ class Recommender():
 								self.learning_rate * (2*diff*user_mat[i, k])
 							)
 
-			print(f"\t{iteration+1} \t\t {sse_accum/self.num_ratings} ")
+			print(f"\t{iteration+1} \t|\t {sse_accum/self.num_ratings} ")
 
 		# Keep these matrices for later
 		self.user_mat = user_mat
