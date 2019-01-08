@@ -29,13 +29,13 @@ movies_test = pd.read_csv('movies_clean.csv')
 ```
 #### Create a Recommender object
 ```
-rec = r.Recommender(df_items=movies_test,
-                    df_reviews=reviews_test,
-                    item_name_colname='movie',
-                    user_id_colname='user_id',
-                    item_id_colname='movie_id',
-                    rating_col_name='rating',
-                    date_col_name='date')
+rec = r.Recommender(df_items=movies_test,                       # df that contains all unique items with description and more
+                    df_reviews=reviews_test,                    # df that contains interactions between users and items
+                    item_name_colname='movie',                  # The title column of the df (this can be use with the 1st df or the 2nd, that why I wanted the same name for both)
+                    user_id_colname='user_id',                  # The name of the user id column
+                    item_id_colname='movie_id',                 # The name of the item id column
+                    rating_col_name='rating',                   # The rating column
+                    date_col_name='date')                       # The date column
 ```
 #### Fit the data
 This function will train the data using a Funk Singular value decomposition, by creating a user matrix U (user by latent feature), an item matrix (latent feature by item) and a Sigma diagonal matrix with the shape (latent feature x latent feature) with the highest (more relevant) latent feature on the upper left and the lowest (less relevant) latent feature on the lower right.
@@ -44,21 +44,9 @@ rec.fit(iters=1)
 ```
 
 #### Dot product matrix
-Then you need to create a dot product using a subset of your item dataframe, this subset contains only additionnal
-feature like genre, years etc. but not informations about movie id, movie name, etc.
 
-To make recommendation: given an item id we want to find similar items to this item. Similarity are found by computing the dot product of items with its transpose, the more the result of an item-item pair is high, the more they have in common.
+To make recommendation: given a user id we want to find similar users to this user. Similarity are found by computing the dot product of users subset with its transpose, the more the result of an user-user pair is high, the more they have in common.
 This dot_product_matrix will be use in the `make_recommendations()` function.
-```
-def prep_get_similar_items():
-    item_content = np.array(movies_test.iloc[:,4:])
-    item_content_transpose = np.transpose(item_content)
-    dot_prod = item_content.dot(item_content_transpose)
-    return dot_prod
-
-dot_product_matrix = prep_get_similar_items()
-```
-The same thing in order to find similar users:
 ```
 df_user_similarity = rec.user_item_df.reset_index().replace(np.nan, 0)
 def prep_get_similar_user():
@@ -76,7 +64,7 @@ According to the `_id_type` or the `_i` (exist or not), this functions will made
 - Matrix Factorisation Funk SVD: if the _id_type='user' and the _id of the user exist in the database
 - Collaborative Filtering User-Based: if the _id_type='user' and the _id of the user exist in the database
 - Ranked Based: if the _id_type='user' and the _id of the user dosn't exist in the database (new user)
-- Collaborative Filtering Content-Based: if the _id_type='item' and the _id of the item exist in the database
+- Content-Based: if the _id_type='item' and the _id of the item exist in the database
 - error message: if the item doesn't exist
 
 To help you displaying result, you can use this helper function:
@@ -111,8 +99,8 @@ def display_recommendations(rec_ids, rec_names, message, rec_ids_users, rec_user
 The you can simply run
 ```
 rec_ids, rec_names, message, rec_ids_users, rec_user_articles = rec.make_recommendations(_id=3,
-                                                                                         dot_prod=dot_product_matrix, #the matrix that you have created before
                                                                                          dot_prod_user= dot_product_matrix_user, #the matrix that you have created before
+                                                                                         tfidf_matrix=tfidf_matrix, # the matrix that you should create to find similar movies
                                                                                          _id_type='user',
                                                                                          rec_num=5)
 display_recommendations(rec_ids, rec_names, message, rec_ids_users, rec_user_articles)

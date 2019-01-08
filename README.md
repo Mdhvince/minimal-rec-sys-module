@@ -31,7 +31,6 @@ movies_test = pd.read_csv('movies_clean.csv')
 ```
 rec = r.Recommender(df_items=movies_test,                       # df that contains all unique items with description and more
                     df_reviews=reviews_test,                    # df that contains interactions between users and items
-                    based_similarity_col='text_description',    # The column name that you want to based on to compute similarity between items
                     item_name_colname='movie',                  # The title column of the df (this can be use with the 1st df or the 2nd, that why I wanted the same name for both)
                     user_id_colname='user_id',                  # The name of the user id column
                     item_id_colname='movie_id',                 # The name of the item id column
@@ -101,6 +100,7 @@ The you can simply run
 ```
 rec_ids, rec_names, message, rec_ids_users, rec_user_articles = rec.make_recommendations(_id=3,
                                                                                          dot_prod_user= dot_product_matrix_user, #the matrix that you have created before
+                                                                                         tfidf_matrix=tfidf_matrix, # the matrix that you should create to find similar movies
                                                                                          _id_type='user',
                                                                                          rec_num=5)
 display_recommendations(rec_ids, rec_names, message, rec_ids_users, rec_user_articles)
