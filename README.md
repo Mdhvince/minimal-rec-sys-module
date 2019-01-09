@@ -31,6 +31,7 @@ movies_test = pd.read_csv('movies_clean.csv')
 ```
 rec = r.Recommender(df_items=movies_test,                       # df that contains all unique items with description and more
                     df_reviews=reviews_test,                    # df that contains interactions between users and items
+                    user_item_df=user_item_df,                  # A user-item df
                     item_name_colname='movie',                  # The title column of the df (this can be use with the 1st df or the 2nd, that why I wanted the same name for both)
                     user_id_colname='user_id',                  # The name of the user id column
                     item_id_colname='movie_id',                 # The name of the item id column
