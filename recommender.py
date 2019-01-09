@@ -12,7 +12,7 @@ class Recommender():
     a Content Based Recommender.
     '''
 
-	def __init__(self, df_items, df_reviews,
+	def __init__(self, df_items, df_reviews, user_item_df,
                  item_name_colname='item',
 				 user_id_colname='user_id', item_id_colname='item_id',
 				 rating_col_name='rating', date_col_name='date'):
@@ -20,6 +20,7 @@ class Recommender():
 		Input:
 		- df_items: Pandas datafram of items
 		- df_reviews: Pandas datafram of items
+		- user_item_df: A user-item matrix
 		- item_name_colname: The column name corresponding to the item
 		name (str)
 		- user_id_colname: The column name corresponding to the user id
@@ -38,6 +39,7 @@ class Recommender():
 		self.item_id_colname = item_id_colname
 		self.rating_col_name = rating_col_name
 		self.date_col_name = date_col_name
+		self.user_item_df = user_item_df
 
 		assert self.user_id_colname in self.df_reviews.columns, (
 			'the user_id_colname given is not in your df_reviews'
@@ -74,21 +76,6 @@ class Recommender():
 		self.latent_features = latent_features
 		self.learning_rate = learning_rate
 		self.iters = iters
-
-		print('Create User-Item matrix...')
-
-		# Create user-item matrix
-		user_item = self.df_reviews[[self.user_id_colname,
-									 self.item_id_colname,
-									 self.rating_col_name,
-									 self.date_col_name
-									 ]]
-
-		self.user_item_df = (
-				user_item.groupby([self.user_id_colname,
-								   self.item_id_colname])[self.rating_col_name]
-														  .max().unstack()
-				)
 		self.user_item_mat = np.array(self.user_item_df)
 
 		# Set up some useful values for later
